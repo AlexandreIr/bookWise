@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,7 +25,8 @@ import Link from "next/link";
 import { FIELD_NAMES, FIELD_TYPES } from "@/constants";
 import ImageUpload from "./ImageUpload";
 import { toast } from "@/hooks/use-toast";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
@@ -64,10 +64,10 @@ const AuthForm = <T extends FieldValues>({
         title: `Error ${isSignIn ? "signing in" : "signing up"}`,
         description: result.error ?? "Something went wrong",
         variant: "destructive",
-      })
+      });
     }
   };
-
+  
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-white">
@@ -82,7 +82,10 @@ const AuthForm = <T extends FieldValues>({
       </p>
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleSubmit)}
+           onSubmit={(e) => {
+            e.preventDefault();            
+            handleSubmit(form.getValues());
+          }}
           className="space-y-6 w-full"
         >
           {Object.keys(defaultValues).map((field) => (
